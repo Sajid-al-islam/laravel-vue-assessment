@@ -24,7 +24,9 @@ class ProductController extends Controller
             $query->select('variant_id', 'variant')->groupBy('variant_id', 'variant');
         }])->get();
 
-        $query = new Product();
+        $query = Product::with(['variants' => function ($q) {
+            $q->with('variant_price');
+        }]);
 
         if (request()->has('search_title') && request('search_title') !== null) {
             $key = request()->search_title;
