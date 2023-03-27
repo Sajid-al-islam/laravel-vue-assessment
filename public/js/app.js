@@ -2109,7 +2109,9 @@ __webpack_require__.r(__webpack_exports__);
         product_variant_prices: this.product_variant_prices
       };
       axios.post('/product', product).then(function (response) {
-        location.href('/product');
+        if (response.data == 'success') {
+          window.location.href = '/product';
+        }
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2339,7 +2341,11 @@ __webpack_require__.r(__webpack_exports__);
         product_variant_prices: this.product_variant_prices
       };
       axios.post('/product_update/' + this.product_id, product).then(function (response) {
-        location.href('/product');
+        if (response.data == 'success') {
+          window.location.href = '/product';
+        }
+
+        console.log(response);
       })["catch"](function (error) {
         console.log(error);
       });

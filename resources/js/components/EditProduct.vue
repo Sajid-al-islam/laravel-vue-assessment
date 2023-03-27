@@ -199,7 +199,10 @@ export default {
 
 
             axios.post('/product_update/'+this.product_id, product).then(response => {
-                location.href('/product');
+                if(response.data == 'success') {
+                    window.location.href = '/product';
+                }
+                console.log(response);
             }).catch(error => {
                 console.log(error);
             })

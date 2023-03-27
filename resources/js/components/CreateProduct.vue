@@ -193,7 +193,9 @@ export default {
 
 
             axios.post('/product', product).then(response => {
-                location.href('/product');
+                if(response.data == 'success') {
+                    window.location.href = '/product';
+                }
             }).catch(error => {
                 console.log(error);
             })
