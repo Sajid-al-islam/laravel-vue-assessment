@@ -117,6 +117,7 @@ export default {
             product_name: '',
             product_sku: '',
             description: '',
+            product_id: '',
             images: [],
             product_variant: [
                 {
@@ -204,7 +205,15 @@ export default {
 
     },
     mounted() {
-        console.log('Component mounted.')
+        let url = window.location.href;
+        var splitUrl = url.split('/');
+        this.product_id = splitUrl[4];
+
+        axios.get('/product/'+this.product_id).then(response => {
+            console.log(response.data);
+        }).catch(error => {
+            console.log(error);
+        })
     }
 }
 </script>

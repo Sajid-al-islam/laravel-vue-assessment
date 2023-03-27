@@ -24,9 +24,7 @@ class ProductController extends Controller
             $query->select('variant_id', 'variant')->groupBy('variant_id', 'variant');
         }])->get();
 
-        $query = Product::with(['variants' => function ($q) {
-            $q->with('variant_price');
-        }]);
+        $query = new Product();
 
         if (request()->has('search_title') && request('search_title') !== null) {
             $key = request()->search_title;
@@ -41,7 +39,7 @@ class ProductController extends Controller
             $query->rightJoin('product_variants','product_variants.product_id','=','products.id')
             ->select('products.*','product_variants.variant')
             ->where('variant', $variant_query);
-            
+
             // $query->with(['variants' => function ($q) use ($variant_query) {
             //     $q->where('variant', $variant_query);
             // }]);
@@ -87,14 +85,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // dd(request()->all());
+
         $product = new Product();
         $product->title = request()->title;
         $product->sku = request()->sku;
         $product->description = request()->description;
-        $product->save();
+        // $product->save();
         $request_product_variants = request()->product_variant;
         $product_variant_prices = request()->product_variant_prices;
+        if(request()->has('product_image') && count(request()->product_image) > 0) {
+            foreach (request()->product_image as $key => $image) {
+                dd($image);
+            }
+        }
 
         foreach($product_variant_prices as $key => $item) {
 
@@ -124,10 +127,13 @@ class ProductController extends Controller
                 $variant_price_query->product_id = $product->id;
                 $variant_price_query->save();
             }
-            
-            return response()->json('success', 200);
+
+
             // $product_variant->save();
         }
+
+
+        return response()->json('success', 200);
         // $product_variant_prices = collect(request()->product_variant_prices);
         // foreach ($product_variant_prices as $key => $value) {
         //     $single_variants = explode("/",$value['title']);
@@ -152,6 +158,11 @@ class ProductController extends Controller
      */
     public function show($product)
     {
+        $product = Product::where('id', $product)->with('variants')->first();
+
+        return response()->json([
+            'product' => $product
+        ]);
     }
 
     /**

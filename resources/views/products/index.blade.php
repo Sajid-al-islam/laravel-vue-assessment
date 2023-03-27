@@ -66,6 +66,7 @@
                         <td>
                             {{-- @dump($product->variants) --}}
                             @foreach ($product->variants as $variant_item)
+
                             <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
 
                                 <dt class="col-sm-3 pb-0">
@@ -73,7 +74,9 @@
                                 </dt>
 
                                 <dd class="col-sm-9">
+
                                     <dl class="row mb-0">
+
                                         <dt class="col-sm-4 pb-0">Price : {{ $variant_item->variant_price ? number_format($variant_item->variant_price->price,2) : 0 }}</dt>
                                         <dd class="col-sm-8 pb-0">InStock : {{ $variant_item->variant_price ? number_format($variant_item->variant_price->stock,2) : 0 }}</dd>
                                     </dl>
