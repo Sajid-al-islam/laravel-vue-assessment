@@ -87,6 +87,60 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // dd(request()->all());
+        $product = new Product();
+        $product->title = request()->title;
+        $product->sku = request()->sku;
+        $product->description = request()->description;
+        $product->save();
+        $request_product_variants = request()->product_variant;
+        $product_variant_prices = request()->product_variant_prices;
+
+        foreach($product_variant_prices as $key => $item) {
+
+            $single_variants = explode("/",$item['title']);
+
+            foreach ($single_variants as $key => $variant_single) {
+                $product_variant = new ProductVariant();
+                $product_variant->variant = $variant_single;
+                foreach($request_product_variants as $varint_item) {
+                    $product_variant->variant_id = $varint_item['option'];
+                }
+                $product_variant->product_id = $product->id;
+                $product_variant->save();
+
+                $variant_price_query = new ProductVariantPrice();
+                if($key == 0) {
+                    $variant_price_query->product_variant_one = $product_variant->id;
+                }
+                if($key == 1) {
+                    $variant_price_query->product_variant_two = $product_variant->id;
+                }
+                if($key == 2) {
+                    $variant_price_query->product_variant_three = $product_variant->id;
+                }
+                $variant_price_query->price = $item['price'];
+                $variant_price_query->stock = $item['stock'];
+                $variant_price_query->product_id = $product->id;
+                $variant_price_query->save();
+            }
+            
+            return response()->json('success', 200);
+            // $product_variant->save();
+        }
+        // $product_variant_prices = collect(request()->product_variant_prices);
+        // foreach ($product_variant_prices as $key => $value) {
+        //     $single_variants = explode("/",$value['title']);
+        //     foreach ($single_variants as $key => $variant_single) {
+        //         if(strlen($variant_single) > 0) {
+        //             $product_variants = $product_variants->flatten(1);
+        //             dd($product_variants);
+        //         }
+        //     }
+        //     // if(strlen())
+        //     dd($single_variants);
+        //     $product_variant_price = new ProductVariantPrice();
+        // }
     }
 
 
