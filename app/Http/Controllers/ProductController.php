@@ -90,14 +90,9 @@ class ProductController extends Controller
         $product->title = request()->title;
         $product->sku = request()->sku;
         $product->description = request()->description;
-        // $product->save();
+        $product->save();
         $request_product_variants = request()->product_variant;
         $product_variant_prices = request()->product_variant_prices;
-        if(request()->has('product_image') && count(request()->product_image) > 0) {
-            foreach (request()->product_image as $key => $image) {
-                dd($image);
-            }
-        }
 
         foreach($product_variant_prices as $key => $item) {
 
@@ -182,9 +177,51 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $product)
     {
-        //
+        $product = Product::find($product);
+        $product->title = request()->title;
+        $product->sku = request()->sku;
+        $product->description = request()->description;
+        $product->save();
+        $request_product_variants = request()->product_variant;
+        $product_variant_prices = request()->product_variant_prices;
+
+
+        foreach($product_variant_prices as $key => $item) {
+
+            $single_variants = explode("/",$item['title']);
+
+            foreach ($single_variants as $key => $variant_single) {
+                $product_variant = new ProductVariant();
+                $product_variant->variant = $variant_single;
+                foreach($request_product_variants as $varint_item) {
+                    $product_variant->variant_id = $varint_item['option'];
+                }
+                $product_variant->product_id = $product->id;
+                $product_variant->save();
+
+                $variant_price_query = new ProductVariantPrice();
+                if($key == 0) {
+                    $variant_price_query->product_variant_one = $product_variant->id;
+                }
+                if($key == 1) {
+                    $variant_price_query->product_variant_two = $product_variant->id;
+                }
+                if($key == 2) {
+                    $variant_price_query->product_variant_three = $product_variant->id;
+                }
+                $variant_price_query->price = $item['price'];
+                $variant_price_query->stock = $item['stock'];
+                $variant_price_query->product_id = $product->id;
+                $variant_price_query->save();
+            }
+
+        }
+
+
+        return response()->json('success', 200);
+
     }
 
     /**

@@ -193,7 +193,7 @@ export default {
 
 
             axios.post('/product', product).then(response => {
-                console.log(response.data);
+                location.href('/product');
             }).catch(error => {
                 console.log(error);
             })

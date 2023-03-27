@@ -2109,7 +2109,7 @@ __webpack_require__.r(__webpack_exports__);
         product_variant_prices: this.product_variant_prices
       };
       axios.post('/product', product).then(function (response) {
-        console.log(response.data);
+        location.href('/product');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2330,8 +2330,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     // store product into database
     saveProduct: function saveProduct() {
-      var _this2 = this;
-
       var product = {
         title: this.product_name,
         sku: this.product_sku,
@@ -2340,9 +2338,8 @@ __webpack_require__.r(__webpack_exports__);
         product_variant: this.product_variant,
         product_variant_prices: this.product_variant_prices
       };
-      axios.post('/product', product).then(function (response) {
-        _this2.product = response.data;
-        console.log(_this2.product);
+      axios.post('/product_update/' + this.product_id, product).then(function (response) {
+        location.href('/product');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2350,17 +2347,17 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    var _this3 = this;
+    var _this2 = this;
 
     var url = window.location.href;
     var splitUrl = url.split('/');
     this.product_id = splitUrl[4];
     axios.get('/product/' + this.product_id).then(function (response) {
-      _this3.product_name = response.data.title;
-      _this3.product_sku = response.data.sku;
-      _this3.description = response.data.description;
-      _this3.loaded_variants = response.data.variants;
-      console.log(_this3.product_variant);
+      _this2.product_name = response.data.title;
+      _this2.product_sku = response.data.sku;
+      _this2.description = response.data.description;
+      _this2.loaded_variants = response.data.variants;
+      console.log(_this2.product_variant);
     })["catch"](function (error) {
       console.log(error);
     });
@@ -2373,11 +2370,11 @@ __webpack_require__.r(__webpack_exports__);
   // },
   watch: {
     loaded_variants: function loaded_variants(val) {
-      var _this4 = this;
+      var _this3 = this;
 
       console.log(this.product_variant, val);
       val.forEach(function (item) {
-        _this4.product_variant.forEach(function (tag) {
+        _this3.product_variant.forEach(function (tag) {
           tag.tags.push(item.variant);
         });
       });
@@ -51452,7 +51449,7 @@ var render = function() {
         attrs: { type: "submit" },
         on: { click: _vm.saveProduct }
       },
-      [_vm._v("Save")]
+      [_vm._v("Update")]
     ),
     _vm._v(" "),
     _c(
