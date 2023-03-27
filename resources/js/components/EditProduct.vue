@@ -6,18 +6,20 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="">Product Name</label>
-                            <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
+                            <input type="text" v-if="product_name" v-model="product_name" placeholder="Product Name" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="">Product SKU</label>
-                            <input type="text" v-model="product_sku" placeholder="Product Name" class="form-control">
+                            <input type="text" v-if="product_sku" v-model="product_sku" placeholder="Product Name" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="">Description</label>
-                            <textarea v-model="description" id="" cols="30" rows="4" class="form-control"></textarea>
+                            <textarea v-if="description" v-model="description" id="" cols="30" rows="4" class="form-control"></textarea>
                         </div>
                     </div>
                 </div>
+
+
 
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -85,6 +87,7 @@
                                 </tr>
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
                 </div>
@@ -118,7 +121,9 @@ export default {
             product_sku: '',
             description: '',
             product_id: '',
+            product: '',
             images: [],
+            loaded_variants: '',
             product_variant: [
                 {
                     option: this.variants[0].id,
@@ -194,7 +199,8 @@ export default {
 
 
             axios.post('/product', product).then(response => {
-                console.log(response.data);
+                this.product = response.data;
+                console.log(this.product);
             }).catch(error => {
                 console.log(error);
             })
@@ -204,16 +210,48 @@ export default {
 
 
     },
-    mounted() {
+    created() {
         let url = window.location.href;
         var splitUrl = url.split('/');
         this.product_id = splitUrl[4];
 
         axios.get('/product/'+this.product_id).then(response => {
-            console.log(response.data);
+            this.product_name = response.data.title;
+            this.product_sku = response.data.sku;
+            this.description = response.data.description;
+            this.loaded_variants = response.data.variants;
+
+            console.log(this.product_variant);
         }).catch(error => {
             console.log(error);
         })
+    },
+    // updated(){
+    //     this.loaded_variants.forEach(item => {
+    //         this.product_variant.tags.push(item.variant)
+    //     })
+    //     console.log(this.product_variant);
+    // },
+    watch : {
+        loaded_variants:function(val) {
+            console.log(this.product_variant, val);
+            val.forEach(item => {
+                this.product_variant.forEach(tag => {
+                    tag.tags.push(item.variant)
+                })
+            })
+        },
+    },
+    mounted() {
+        // let url = window.location.href;
+        // var splitUrl = url.split('/');
+        // this.product_id = splitUrl[4];
+
+        // axios.get('/product/'+this.product_id).then(response => {
+        //     console.log(response.data);
+        // }).catch(error => {
+        //     console.log(error);
+        // })
     }
 }
 </script>

@@ -160,9 +160,7 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $product)->with('variants')->first();
 
-        return response()->json([
-            'product' => $product
-        ]);
+        return response()->json($product);
     }
 
     /**
