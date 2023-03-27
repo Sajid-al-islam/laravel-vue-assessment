@@ -28,8 +28,6 @@ class ProductController extends Controller
             $q->with('variant_price');
         }]);
 
-
-
         if (request()->has('search_title') && request('search_title') !== null) {
             $key = request()->search_title;
             $query->where(function ($q) use ($key) {
@@ -40,9 +38,13 @@ class ProductController extends Controller
 
         if(request()->has('variant') && request('variant') !== null) {
             $variant_query = request('variant');
-            $query->with(['variants' => function ($q) use ($variant_query) {
-                $q->where('variant', $variant_query);
-            }]);
+            $query->rightJoin('product_variants','product_variants.product_id','=','products.id')
+            ->select('products.*','product_variants.variant')
+            ->where('variant', $variant_query);
+            
+            // $query->with(['variants' => function ($q) use ($variant_query) {
+            //     $q->where('variant', $variant_query);
+            // }]);
         }
 
         if (request()->has('date') && request('date') !== null) {
@@ -54,12 +56,9 @@ class ProductController extends Controller
             $key_from = request()->price_from;
             $key_to = request()->price_to;
 
-
-            $query->with(['variants' => function ($q) use ($key_from, $key_to) {
-                $q->whereHas('variant_price', function ($query) use ($key_from, $key_to) {
-                    $query->whereBetween('price', [$key_from, $key_to]);
-                })->with(['variant_price']);
-            }]);
+            $query->rightJoin('product_variant_prices','product_variant_prices.product_id','=','products.id')
+            ->select('products.*','product_variant_prices.price')
+            ->whereBetween('price', [$key_from, $key_to]);
         }
 
         $products = $query->with(['variants' => function ($q) {
