@@ -40,16 +40,13 @@ class ProductController extends Controller
             $variant_query = request('variant');
             $query->rightJoin('product_variants','product_variants.product_id','=','products.id')
             ->select('products.*','product_variants.variant')
-            ->where('variant', $variant_query);
-
-            // $query->with(['variants' => function ($q) use ($variant_query) {
-            //     $q->where('variant', $variant_query);
-            // }]);
+            ->where('product_variants.variant', $variant_query);
         }
 
         if (request()->has('date') && request('date') !== null) {
             $from_date = request('date');
-            $query->whereBetween('created_at', [$from_date, Carbon::now()]);
+
+            $query->whereBetween('products.created_at', [$from_date, Carbon::now()]);
         }
 
         if (request()->has('price_to') && request()->has('price_from') && request('price_to') !== null && request('price_from') !== null) {
